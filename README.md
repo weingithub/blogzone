@@ -1,11 +1,18 @@
 # pre-install
 
-at first, you need have a php development environment.<br>
-1. yum -y install php
+## php
+`yum -y install php`
 
-then, use mysql as db to store data.<br>
-2. yum -y install  mysql-server 
+## mysql
+`yum -y install  mysql-server` 
 
-now, we have db, and php, but our php can't manipulate db, so, we need install db-driver. <br>
-3. yum -y install php-mysql
+## mysql-driver
+`yum -y install php-mysql`
 
+## apache config
+when we want to hide index.php, then we do this:
+* move `htaccess` file to apache's webroot, such as /var/www/html, then change file name to `.htaccess`. `.htaccess` file set the rule that apache to rewrite<br>
+* modify `httpd.conf`, webroot's Directory config,such as <Directory "/var/www/html">. change AllowOverride value from None to  All, so that the rule in `.htaccess` become effective.
+
+## CI  
+copy index.php in CodeIgniter-3.0.2-blog to apache's webroot. then change system_path and application_folder 's value 
