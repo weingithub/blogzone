@@ -9,6 +9,7 @@
     
                 <?php echo strip_tags($news_item['brief']),"..."; ?>
                 
+
                 </div>
              <?php endforeach; ?>
             </div>
