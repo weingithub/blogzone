@@ -1,0 +1,50 @@
+.login,.register{
+    margin: auto;
+    width:640px;
+    height:80%;
+}
+
+.login .preg{
+    margin-top:120px;    
+}
+
+.login form{
+    margin-top:30px;
+    padding:2px 3px 4px 5px;
+}
+
+   .login a{
+        /*color:#000000; */
+        font-weight:bold;
+        text-decoration:none;  /*取消下划线*/
+        font-size: 20px;
+        color: -webkit-link;
+    }
+    
+    .login a:hover{
+        cursor:hand ;
+        font-size: 30px;   
+    }
+
+.register form{
+    margin-top:30px;
+    padding:2px 3px 4px 5px;
+}
+
+.register form table{
+    margin-top:100px;
+}
+
+.register .button_reg{
+    margin-top:30px;
+    font-size: 18px;
+    color:#000000;
+}
+
+.info_red{
+    color:red;
+}
+
+.info_green{
+    color:green;
+}

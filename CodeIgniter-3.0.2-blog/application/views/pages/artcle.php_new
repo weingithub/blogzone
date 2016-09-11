@@ -1,0 +1,44 @@
+            <div class="main-content">
+            <?php foreach ($news as $news_item): ?>
+                <div class="article">
+                <p><a href="<?php echo site_url('blog/article/'.$news_item['id']); ?>"><?php echo $news_item['title']; ?></a></p>
+                <div class="article_info">    
+                    <span class="link_postdate"><?php echo $news_item['times']; ?></span>
+                    <span class="link_postdate">post by <?php echo $news_item['userid']; ?></span>
+                </div>
+    
+                <?php echo htmlspecialchars($news_item['brief']),"..."; ?>
+                
+                </div>
+             <?php endforeach; ?>
+
+               <?php     
+                                echo '<div id="pagenavi" class="navigation">
+                        <span class="pages">第 '.$i.'页， 共'.$sum.'页</span>
+                        <span class="current"> '.$i.'</span>
+                        ';
+                    
+                    for($j=$i+1; $j < ($i+$sum); $j++)
+                    {
+                        if ($j < ($i+$sum/2))
+                        {
+                            echo '<a class="page larger" href="javascript:void(0);">'.$j.'</a>';
+                        }
+                        else if ($j == ($i+$sum - 1))
+                        {
+                            echo '<span class="extend">...</span>';
+                            echo '<a class="page larger" href="javascript:void(0);">'.$j.'</a>';
+                            echo '<span class="extend">...</span>';
+                            echo '<a class="page larger" href="javascript:void(0);">>></a>';
+                            echo '<a class="last" href="javascript:void(0);">最后>></a>';
+                        }
+                        else
+                        {
+                            ;
+                        }
+                    }
+                ?>       
+            </div>
+<br style="clear:both;" />  
+<br style="clear:both;" />
+
