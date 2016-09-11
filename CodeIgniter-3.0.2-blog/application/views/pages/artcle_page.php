@@ -7,7 +7,7 @@
                     <span class="link_postdate">post by <?php echo $news_item['userid']; ?></span>
                 </div>
     
-                <?php echo htmlspecialchars($news_item['brief']),"..."; ?>
+                <?php echo strip_tags($news_item['brief']),"..."; ?>
                 
                 </div>
              <?php endforeach; ?>
