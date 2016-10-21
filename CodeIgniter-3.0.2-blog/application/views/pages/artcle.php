@@ -1,26 +1,26 @@
-<head>
-    <style>
-        .article {
-    height: 280px;
-    width: 100%;
-    margin-top:10px;
-    padding: 0.8em;
-    border: 1px solid black;
-    background-color:#ffffff;
-    }
 
 
-    </style>
-</head>
+            <div class="main-content">
+                <div class="article_page">
+                <h1><?php echo $title; ?></h1>
+                
+                  <div class="article_info">
+                    <span><?php echo $times; ?></span>
+                    <span>post by <?php echo $userid; ?></span>
+                <?php
+                    if (isset($_SESSION['username']) && $_SESSION['username'] == $userid)
+                    {
+                        echo '<a href="blog/write/'.$id.'">编辑</a>';
+                    }
+                ?>
+                </div>                
 
+                <HR width="100%" SIZE=1/>               
+                <?php echo $content; ?>   
+                </div>
+            </div>
+<br style="clear:both;" />  
+<br style="clear:both;" />
 
-<?php foreach ($news as $news_item): ?>
-
-    <div class="article">
-        <p><a href="<?php echo site_url('news/'.$news_item['id']); ?>"><?php echo $news_item['title']; ?></a></p>
-        <?php echo $news_item['content']; ?>
-
-        
-    </div>
-
-<?php endforeach; ?>
+<script src="kindeditor/kindeditor-all.js"></script>
+<script charset="utf-8" src="kindeditor/plugins/code/prettify.js"></script>

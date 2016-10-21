@@ -12,17 +12,18 @@ class Blog extends CI_Controller {
         redirect("blog");
     }
     
-    public function home()
+    public function home($page =1)
     {
+        //echo $page,'---tttt---<br>';
         $this->load->view('templates/header');
-	    $this->articlepages();
+	    $this->articlepages(0, $page);
         $this->load->view('templates/footer');
     }
     
-    public function tag($tagid)
+    public function tag($tagid, $page=1)
     {
         $this->load->view('templates/header');
-        $this->articlepages($tagid);
+        $this->articlepages($tagid, $page);
         $this->load->view('templates/footer');
     }
 
@@ -67,37 +68,98 @@ class Blog extends CI_Controller {
         $this->load->view('templates/footer');
     }
 
-    public function savearticle()
+    private function articlepages($tagid = 0, $nextpag = 1)
     {
-        $title = $this->input->post('title');
-        $content = $this->input->post('content');
-        echo $title,"---",$content;
-    }
+        $this->load->model('news_model');
+	
+        $perpage = 3;
 
-    private function articlepages($tagid = 0)
-    {
-        $curpage = 0;
-   
-        if (!isset($_POST["curpage"]))
+        if (empty($_POST["sum"]))
         {
-            ;
+            //echo "<br>empty hide_sum<br>";
+
+            $rowres = $this->news_model->get_brief_num($tagid);
+
+            foreach ($rowres as $row)
+                $allsum= $rowres["couid"];
+
+            $data["allpage"] = ceil($allsum/$perpage);          
         }
         else
         {
-            $curpage = $_POST["curpage"];
+            $data["allpage"] = $_POST["sum"];    
         }
 
-        $this->load->model('news_model');
-	
-        $data['news'] = $this->news_model->get_brief($tagid);
+        if (empty($_POST["maxid"]))
+        {
+            //echo "<br>empty hide_maxid<br>";
+            $maxid = 0;
+        }
+        else
+        {
+           $maxid = $_POST["maxid"];
+        }
+
+        if (empty($_POST["minid"]))
+        {
+            //echo "<br>empty hide_maxid<br>";
+            $minid = 0;
+        }
+        else
+        {
+           $minid = $_POST["minid"];
+        }
+
+        if (empty($_POST["lastpage"]))
+        {
+            //echo "<br>empty hide_lastpage<br>";
+            $lastpage = 1;
+        }
+        else 
+        {
+           $lastpage = $_POST["lastpage"];
+        }
+
+        //echo "----",$nextpag."<br>";
+        //echo $lastpage."<br>";
+        //echo $maxid."<br>"    ;    
+
+        $param["tagid"] = $tagid;
+        $param["maxid"] = $maxid;
+        $param["minid"] = $minid;
+        $param["lastpage"] = $lastpage;       
+        $param["nextpag"] = $nextpag;
+        $param["per"] = $perpage;
+
+        $data['curtag'] = $tagid;
+        $data['news'] = $this->news_model->get_brief($param);
+        
+        arsort($data['news']);
+
         $data['tags'] = $this->news_model->get_tags();
 
-        //$data["page"] = $curpage+1;
-        
-        //echo "size:",count($data);
-        //$data["allpage"] = ;
+        $data["curpage"] = $nextpag;
 
-        
+        $maxid = 0;
+        $minid = 0xFFFFFFFF;
+
+        foreach ($data["news"] as $item)
+        {
+            //echo $item["id"];
+            if ($maxid < $item["id"])
+            {
+                $maxid = $item["id"];
+            }
+
+            if ($minid > $item["id"])
+            {
+                $minid = $item["id"];
+            }
+        }
+
+        $data["maxid"] = $maxid;
+        $data["minid"] = $minid;
+
         $this->load->view('templates/main-head');
         $this->load->view('templates/left',$data);
         $this->load->view('pages/artcle_page', $data);

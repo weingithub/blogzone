@@ -68,6 +68,7 @@ class Backend extends CI_Controller {
 
     public function savearticle()
     {
+        $data["aid"] = $this->input->post('aid');
         $data["title"] = $this->input->post('title');
         $data["content"] = $this->input->post('content');
         $data["tagid"] = $this->input->post('tag');
@@ -79,12 +80,11 @@ class Backend extends CI_Controller {
         //先从content中取出128个字符
         $substr = mb_substr($data["content"], 0, 200, "utf-8");
         
-
         $pos = strpos($substr, "<pre");
         
         echo "pos is:",$pos;
 
-        if (!$pos)  //false
+        if (!$pos)
         {
             $data["brief"] = $substr;
         }
@@ -96,7 +96,7 @@ class Backend extends CI_Controller {
         echo "---".$data["brief"]."---";
         //$this->load->view("pages/jump");
         
-        $res =$this->news_model->insert_article($data);
+        $res =$this->news_model->save_article($data);
         
         if ($res["issuccess"])
         {

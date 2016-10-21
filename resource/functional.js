@@ -161,3 +161,68 @@ function check_login()
 
     return true;
 }
+
+
+function pages(url,nextpage)
+{
+    var maxid =$('#hide_maxid')[0];
+    var sum=$('#hide_sum')[0];
+    var lastpage=$('#hide_lastpage')[0];
+    var minid = $('#hide_minid')[0];
+    
+    var ch = url.charAt(url.length -1);
+    
+    var targeturl;
+    
+    //判断blog后是否为数字
+    var fistpos = url.indexOf('/');
+ 
+    //考虑以下这几种情况/blog ;/blog/; /blog/2 ;/blog/tag/1; /blog/tag/1/1
+    //1与4相同处理
+    //2
+    //3与5同
+    
+    var splitlen = url.split('/').length;
+    var nextpos =  url.indexOf('/', fistpos);
+
+    if (nextpos != -1 && (nextpos - fistpos +2 == url.length)) //2
+    {
+        targeturl = url + nextpage;
+    }   
+    else if (nextpos == -1) //1
+    {
+        targeturl = url + "/"+ nextpage;
+    }
+    if (3 == splitlen || 5 == splitlen) //3或5
+    {
+        targeturl = url.substring(0, url.length -1) + nextpage;
+    }
+    else
+    {
+        targeturl = url + "/"+ nextpage;
+    }
+
+    //创建虚拟表单，提交post请求
+    var temp = document.createElement("form");
+    temp.action = targeturl;
+    temp.method = "post";
+    temp.style.display = "none"; 
+
+
+    temp.appendChild(maxid);
+    temp.appendChild(sum);
+    temp.appendChild(lastpage);    
+    temp.appendChild(minid);
+    
+    
+    //var opt = document.createElement("input");    
+    //opt.type = "submit";  
+    //opt.name = "postsubmit";  
+
+    //temp.appendChild(opt);  
+
+    document.body.appendChild(temp);
+    temp.submit();
+    
+    return 0;
+}
