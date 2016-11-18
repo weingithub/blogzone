@@ -1,0 +1,61 @@
+#english-header {
+    line-height: 2em;
+    margin-left:100px; //设置居中
+    margin-right:auto;
+    margin-top:100px;
+    border: 1px solid black;
+}
+
+#english-header form
+{
+    margin-left:auto;
+    margin-right:auto;
+    width:400px;
+    font-size:20px;
+}
+
+#pinyin
+{
+   margin-left:10px;
+}
+
+#pinyin h2 a, .mp3-play {
+    display: inline-block;
+    background: url('images/speaker.jpg') no-repeat;
+    height: 18px;
+    width: 18px;
+    margin-left:5px;
+    margin-right: 2px;
+    text-decoration: none;
+    vertical-align: middle;
+    background-position: 0 1px;
+}
+
+.content
+{
+    width:200px;
+    border-bottom:thick solid  #ff0000;
+}
+
+.content h1 .active {
+    display: inline-block;
+    min-width: 4em;
+    text-align: center;
+    margin-bottom: -2px;
+}
+
+.word_search
+{
+    margin-left:auto; //设置居中
+    margin-right:auto;
+    margin-top:100px;
+    width:70%;
+    font-size:30px;
+}
+
+.word_search input
+{
+    height:30px;
+    margin-left:20px;
+    font-size:20px;
+}

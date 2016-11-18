@@ -117,3 +117,25 @@ $db['test'] = array(
     'failover' => array()
 );
 
+$db['tool'] = array(
+    'dsn'   => '',
+    'hostname' => 'localhost',
+    'username' => 'root',
+    'password' => '123456',
+    'database' => 'tool',
+    'dbdriver' => 'mysqli',
+    'dbprefix' => '',
+    'pconnect' => TRUE,
+    'db_debug' => TRUE,
+    'cache_on' => FALSE,
+    'cachedir' => '',
+    'char_set' => 'utf8',
+    'dbcollat' => 'utf8_general_ci',
+    'swap_pre' => '',
+    'compress' => FALSE,
+    'encrypt' => FALSE,
+    'stricton' => FALSE,
+    'failover' => array()
+);
+
+

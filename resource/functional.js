@@ -226,3 +226,26 @@ function pages(url,nextpage)
     
     return 0;
 }
+
+function prononce_method(aobj)
+{
+    //alert("ok");
+    var urlval = aobj.getAttribute("url");
+    
+    //alert(urlval);   
+    
+    /*
+    $.ajax({
+        type: 'get',
+        url: urlval,
+        async:false,
+        success: function(responseText)
+                  {
+                alert("success");
+        }
+   })
+   */
+    window.open(urlval,'top');
+   //window.location
+}
+
