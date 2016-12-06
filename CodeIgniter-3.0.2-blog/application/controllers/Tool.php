@@ -35,13 +35,15 @@ class Tool extends CI_Controller {
         
         $word = $_POST["word"];
 
-        $url = "http://dict.baidu.com/s?wd=".$word."&ptype=english";
+        //$url = "http://dict.baidu.com/s?wd=".$word."&ptype=english";
+		$url = "http://dict.youdao.com/w/".$word;	
         //echo $url;
 
         $this->AccessPage($url);
         
-        $res = $this->GetMp3Address();  
-        
+        //$res = $this->GetMp3Address();  
+        $res = $this->GetYoudaoMP3Address($word);
+     
         /*
         echo $res["pronounce_eng"]."<br>";
         echo $res["pronounce_us"]."<br>";
@@ -49,18 +51,17 @@ class Tool extends CI_Controller {
         echo $res["phonogram_eng"]."<br>";
         echo $res["phonogram_us"]."<br>";
         */
-
+		
         if (0 != count($res))
         {
-            $this->vocabulary->save_word($_POST, $res);
+           $this->vocabulary->save_word($_POST, $res);
         }
-        
+	
         $this->search_inside($word);
     }
 
     private function search_inside($word)
     {
-        
         $data["voc"] = $this->vocabulary->get_word($word);
 
         //echo $data;
@@ -83,24 +84,80 @@ class Tool extends CI_Controller {
         // 执行curl
         $contents = curl_exec($ch);
         // 关闭curl会话
-         curl_close($ch);
+        curl_close($ch);
 
         $myfile = fopen(".vocaburary", "w") or die("Unable to open file!");   
         fwrite($myfile, $contents);
     }
-
+	
+	private function GetYoudaoMP3Address($word)
+	{
+		echo "welcome";
+		$data = array();
+		$data["pronounce_eng"] = "http://dict.youdao.com/dictvoice?audio=".$word."&type=1";
+		$data["pronounce_us"] = "http://dict.youdao.com/dictvoice?audio=".$word."&type=2";
+		
+		$data["phonogram_eng"] = "";
+        $data["phonogram_us"] = "";
+		
+		//解析音标
+		//打开
+        $file=".vocaburary";
+        $fp = fopen($file,"r");
+        $size = filesize($file);
+		
+		if (0 == $size)
+        {
+            return $data;
+        }
+		
+		//首先获取音标
+		$str = fread($fp, $size);//指定读取大小，这里把整个文件内容读取出来
+        $res = $this->get_tag_data($str, "span", "class", "phonetic");
+  
+		$data["phonogram_eng"] = $res[0];
+		$data["phonogram_us"] = $res[1];
+		
+		//echo "音标:",$data["phonogram_eng"];
+		//echo "音标:",$data["phonogram_us"];
+		
+		/*
+        foreach($res as $value) 
+        {
+			echo "<br>result<br>";
+			$num = 1;
+			echo "<br>--just for test--$res[0]-<br>";
+			foreach($res as $ttt) 
+			{
+				echo "<br>tttt<br> $num";
+				echo $ttt;
+				++$num;
+			}
+		}
+		*/
+		
+		return $data;
+	}
+	
     private function GetMp3Address()
     {
         //打开
-        echo "<br>";
-        $fp = fopen(".vocaburary","r");
+        $file=".vocaburary";
+
+        $fp = fopen($file,"r");
         
-        $size = filesize(".vocaburary");
-        
+        $size = filesize($file);
+
+
+		$data["phonogram_eng"] = "";
+        $data["phonogram_us"] = "";
+		
+		
+		$data["pronounce_eng"] = "";
+		$data["pronounce_us"] = "";
+		
         if (0 == $size)
         {
-            $data = array();
-
             return $data;
         }
 
@@ -109,41 +166,22 @@ class Tool extends CI_Controller {
         
         //首先获取音标
         $res = $this->get_tag($str, "h2");
-        
-        //echo "----------------result is".count($res)."<br>";
-        
 
         foreach($res as $value) 
         {
-            //echo strip_tags($value);      
-
             $strphp = strip_tags($value);
-           // $data["phonogram"] = strstr($strphp, '[');
-            //eng
             $strsplit = explode("[", $strphp);
             
-            //foreach($tt as $ttv)
-           // {   
-            //    echo $ttv."---<br>";            
-           // }
-            
-
            $size = count($strsplit);
 
            if ($size == 3)
            {
                $data["phonogram_eng"] = "[".$strsplit[1]."[".$strsplit[2]; 
-               $data["phonogram_us"] = "";
            }
            else if ($size == 5)
            {
                $data["phonogram_eng"] = "[".$strsplit[1]."[".$strsplit[2];
                $data["phonogram_us"] = "[".$strsplit[3]."[".$strsplit[4];
-           }
-           else
-           {
-                $data["phonogram_eng"] = "";
-                $data["phonogram_us"] = "";
            }
             
             //从h2中再读取mp3
@@ -159,15 +197,11 @@ class Tool extends CI_Controller {
             else if (1 == $size)
             {
                 $data["pronounce_eng"] = $mp3[0];
-                $data["pronounce_us"] = "";
-            }
-            else
-            {
-                $data["pronounce_eng"] = "";
-                $data["pronounce_us"] = "";
             }
         }
 
+        //读取完文件后，删除
+        unlink($file);
         return $data;
     }
     
