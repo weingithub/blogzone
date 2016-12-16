@@ -63,8 +63,38 @@ class Backend extends CI_Controller {
         session_start();
         unset($_SESSION['username']);
 
-         $this->load->view("pages/jump");
+        $this->load->view("pages/jump");
     }
+
+    public function delete($aid)
+    {
+        session_start();
+        if (!isset($_SESSION['username']))
+        {
+            //未登录，返回登录页面
+            $this->load->view("pages/jump");
+        }
+        else
+        {
+            $param["uid"] = $_SESSION['username'];
+
+            //首先，判断当前用户是不是该文章的主人
+            $res = $this->news_model->check_user_article($param["uid"] , $aid);
+            
+            if ($res)  //删除博客，只是置个标志
+            {
+                $this->news_model->delete_article($param["uid"] , $aid);
+                redirect("blog");
+            }
+            else
+            {
+                echo "<script>alert('您无权操作该文章')</script>";
+                $this->load->view("pages/jump");
+            }
+        }
+        
+    }
+
 
     public function savearticle()
     {

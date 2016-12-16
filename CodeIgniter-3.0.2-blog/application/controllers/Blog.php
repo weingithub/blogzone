@@ -189,19 +189,43 @@ class Blog extends CI_Controller {
         }
         else
         {
-            $data= $this->news_model->get_article($aid);
+            
+            if (!isset($_SESSION['username']))
+            {
+                $param["uid"] = "";
+            }
+            else
+            {
+                $param["uid"] = $_SESSION['username'];
+            }
+
+            //首先，判断当前用户是不是该文章的主人
+            //只限于私密日志,并且判断了该文章是否已经被删除
+            $res = $this->news_model->check_secret_article($param["uid"] , $aid);
+            
+            echo "result is ", $res ? 1:0;
+
+            if ($res) 
+            {
+                echo "<script>alert('您无权操作该文章')</script>";
+                $this->load->view("pages/jump");
+            }
+            else
+            {
+                
+                $data= $this->news_model->get_article($aid);
             
             
-            $data['tags'] = $this->news_model->get_tags();
+                $data['tags'] = $this->news_model->get_tags();
             
-           // echo count($data);
-            //var_dump($data);
+                // echo count($data);
+                //var_dump($data);
             
-            $this->load->view('templates/main-head', $data);
-            $this->load->view('templates/left',$data);
-            $this->load->view('pages/artcle', $data);
-            $this->load->view('templates/main-end');
-            
+                $this->load->view('templates/main-head', $data);
+                $this->load->view('templates/left',$data);
+                $this->load->view('pages/artcle', $data);
+                $this->load->view('templates/main-end');
+            }
         }
     }
 }

@@ -18,7 +18,7 @@ class News_model extends CI_Model {
 
         //更大 <- 大 - 小 ->更小
 
-        $sqlbase = 'select id, title, brief,times,userid from articles where  IF(  `userid` ="'.$userid.'", 1 , tagid != 6)';
+        $sqlbase = 'select id, title, brief,times,userid from articles where  IF(  `userid` ="'.$userid.'", 1 , tagid != 6) and isdel=0 ';
 
         if (1 == $nextpag)
         {
@@ -55,10 +55,46 @@ class News_model extends CI_Model {
         {
             $sql = $sql.' order by id asc limit '.$limitnum.','.$perpag;
         }
-        echo $sql;
+
+        //echo $sql;
+       
         $query = $this->db->query($sql);
 
         return $query->result_array();
+    }
+        
+    public function check_user_article($uid, $aid)
+    {
+        $sql = "select 1 from articles where id= $aid and userid = \"$uid\" ";   
+        
+        echo $sql;
+        $query = $this->db->query($sql);
+
+        $res = $query->result_array();
+
+        return !empty($res);  
+    } 
+
+    public function check_secret_article($uid, $aid)
+    {
+        $sql = "select 1 from articles where isdel=0 and (tagid != 6 and id = $aid or(id= $aid and userid = \"$uid\")) ";
+
+        echo $sql;
+        $query = $this->db->query($sql);
+
+        $res = $query->result_array();
+
+        return empty($res);
+    }   
+
+    public function delete_article($uid, $aid)
+    {
+        $sql = "update articles set isdel=1 where id= $aid and userid = \"$uid\" ";
+
+        echo $sql;
+        $query = $this->db->query($sql);
+
+        return $res;
     }
 
     public function get_brief_num($tagid = 0)
