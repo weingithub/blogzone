@@ -9,7 +9,8 @@ create table if not exists blog.articles
 	brief blob not null,
 	cid int not null,
 	star  int default 0,
-	times TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+	times TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	isdel tinyint default 0
 )default charset=utf8;
 
 create table if not exists blog.content
