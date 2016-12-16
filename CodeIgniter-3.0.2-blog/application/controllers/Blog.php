@@ -130,7 +130,19 @@ class Blog extends CI_Controller {
         $param["lastpage"] = $lastpage;       
         $param["nextpag"] = $nextpag;
         $param["per"] = $perpage;
+        
+        //session_start();
 
+        if (!isset($_SESSION['username'])) 
+        {
+            $param["uid"] = "";
+        }
+        else 
+        {
+            $param["uid"] = $_SESSION['username'];
+        }
+
+            
         $data['curtag'] = $tagid;
         $data['news'] = $this->news_model->get_brief($param);
         

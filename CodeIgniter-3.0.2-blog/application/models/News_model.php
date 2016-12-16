@@ -7,21 +7,76 @@ class News_model extends CI_Model {
         //$this->db->_db_set_charset("utf8");
     }
 
-    public function get_brief($tagid = 0)
+    public function get_brief($param)
     {
+        //$lastid = $param["maxid"];
+        $lastpag = $param["lastpage"];
+        $nextpag = $param["nextpag"];
+        $tagid = $param["tagid"];
+        $perpag = $param["per"];
+        $userid = $param["uid"];
+
+        //更大 <- 大 - 小 ->更小
+
+        $sqlbase = 'select id, title, brief,times,userid from articles where  IF(  `userid` ="'.$userid.'", 1 , tagid != 6)';
+
+        if (1 == $nextpag)
+        {
+            $limitnum = 0;
+            $sql = $sqlbase;                
+        }
+        else if ($nextpag >= $lastpag) //往后翻
+        {
+            $limitnum = ($nextpag - $lastpag -1)*$perpag;
+            $sql = $sqlbase.' and id < '.$param["minid"];
+        }
+        else
+        {
+            $limitnum = ($lastpag - $nextpag - 1)*$perpag;
+            //$sql = 'select id, title, brief,times,userid from articles where id >'.$param["maxid"];
+            $sql = $sqlbase.' and id >'.$param["maxid"];
+        }
+
+        
         if ($tagid === 0)
         {
-            $this->db->select("id, title, brief, times, userid");
-            $this->db->from('articles');
-            $query = $this->db->get();
-
-            return $query->result_array();
+            ;
         }
 	    else
 	    {	
-            $query = $this->db->get_where('articles', array('tagid' => $tagid));
-            return $query->result_array();
+            $sql = $sql.' and tagid='.$tagid.' ';
 	    }
+        
+        if (1 == $nextpag || $nextpag >= $lastpag)  //向后翻或第一页
+        {
+            $sql = $sql.' order by id desc limit '.$limitnum.','.$perpag;
+        }
+        else  //向前翻
+        {
+            $sql = $sql.' order by id asc limit '.$limitnum.','.$perpag;
+        }
+        echo $sql;
+        $query = $this->db->query($sql);
+
+        return $query->result_array();
+    }
+
+    public function get_brief_num($tagid = 0)
+    {
+        if ($tagid === 0)
+        {
+            $this->db->select("count(id) as couid");
+            $this->db->from('articles');
+            $query = $this->db->get();
+
+            return $query->row_array();
+        }
+        else
+        {
+            $this->db->select("count(id) as couid");
+            $query = $this->db->get_where('articles', array('tagid' => $tagid));
+            return $query->row_array();
+        }
     }
 
     public function get_article($id)
@@ -36,34 +91,85 @@ class News_model extends CI_Model {
         return $query->row_array();       
     }
     
-    public function insert_article($data)
+    public function save_article($data)
     {
+        $aid = $data["aid"];
         $uid = $data["uid"];
         $title = $data["title"];
         $brief = $data["brief"];
         $content = $data["content"];
         $tag = $data["tagid"];
         
-        echo "---my:".$brief."-------";
-        $aid = 0;
+        //echo "---my:".$brief."-------";
+
+        if (0 == $aid)
+        {
+            return $this->insert_article($content, $uid, $title, $tag, $brief);
+        }
+        else
+        {
+            return $this->update_article($aid, $content, $title, $tag, $brief);
+        }
+        
+    }
+
+    public function update_article($aid, $content, $title, $tag, $brief)
+    {
+        //根据aid查找cid,然后先更新content
+        $query = $this->db->get_where('articles', array('id' => $aid));
+
+        $articleinfo = $query->row_array();
+
+        $updatedata = array('content' => $content);
+        $where = "id=".$articleinfo['cid'];       
+        $update_cont_str = $this->db->update_string('content', $updatedata, $where);
+    
+        $updatedata = array('title' => $title, 'tagid' => $tag, 'brief' => $brief);
+        $where = "id =".$aid;
+        $update_arti_str = $this->db->update_string('articles', $updatedata, $where);
+
+        $this->db->trans_start();
+
+        //更新content
+        $this->db->query($update_cont_str);
+        $this->db->query($update_arti_str);
+        
+        $this->db->trans_complete();
+
+        if ($this->db->trans_status() === FALSE)
+        {
+            $result["issuccess"] = false;
+        }
+        else
+        {
+            $result["issuccess"] = true;
+            $result["aid"] = $aid;
+        }
+
+        return $result;
+    }
+
+    public function insert_article($content, $uid, $title, $tag, $brief)
+    {
+        
         $this->db->trans_start();
 
         $dataval = array('content' => $content);
-        $str = $this->db->insert_string('content', $dataval); 
-        
+        $str = $this->db->insert_string('content', $dataval);
+
         $this->db->query($str);
 
         $cid = $this->db->insert_id();
         $dataval = array('userid' => $uid, 'title' => $title, 'tagid' => $tag,
                         'brief' => $brief, 'cid' => $cid);
-        
+
         $artstr = $this->db->insert_string('articles', $dataval);
 
         $this->db->query($artstr);
         $aid = $this->db->insert_id();
 
         $this->db->trans_complete();
-        
+
         if ($this->db->trans_status() === FALSE)
         {
             $result["issuccess"] = false;
