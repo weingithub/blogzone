@@ -237,7 +237,7 @@ class News_model extends CI_Model {
 
     public function get_secret_tag()
     {
-        $query = $this->db->get_where('tags', array('tagname' => "隐私"));
+        $query = $this->db->get_where('tags', array('tagname' => "私密"));
     
         //echo $this->db->last_query();
 
