@@ -11,7 +11,9 @@
                     if (isset($_SESSION['username']) && $_SESSION['username'] == $userid)
                     {
                         echo '<a href="blog/write/'.$id.'">编辑</a>';
+                        echo '<a href="backend/delete/'.$id.'" style="margin-left:20px;">删除</a>';
                     }
+                    
                 ?>
                 </div>                
 

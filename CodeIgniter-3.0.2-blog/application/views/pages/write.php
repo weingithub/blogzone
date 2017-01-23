@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 	$htmlData = '';
 	if (!empty($content)) {
 		if (get_magic_quotes_gpc()) {
@@ -22,10 +22,11 @@
 
 				<div class="main-content" >
                 	<form name="example" method="post" action="Backend/savearticle">
+                        <input type="text" name="aid" style="display:none" value="<?php if (empty($id)) echo 0; else echo $id; ?>" >
                         <p>标题:</p>
                         <select name="tag" id="tag_id">
                         <?php foreach ($tags as $tagopt): ?>
-                           <option value="<?php echo $tagopt['id'] ?>" <?php if ($tagid == $tagopt['id']) 
+                           <option value="<?php echo $tagopt['id'] ?>" <?php if (!empty($tagid) && $tagid == $tagopt['id']) 
                                 echo 'selected="true"';?> > 
                            <?php echo $tagopt['tagname']; ?></option>   
                         <?php endforeach; ?>
@@ -47,7 +48,7 @@
     <script>
 		KindEditor.ready(function(K) {
 			var editor1 = K.create('textarea[name="content"]', {
-                cssPath : 'http://192.168.0.111/kindeditor/plugins/code/prettify.css',
+                cssPath : 'http://www.yrczone.com/kindeditor/plugins/code/prettify.css',
 				afterCreate : function() {
 					var self = this;
                     
