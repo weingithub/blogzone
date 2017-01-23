@@ -17,8 +17,10 @@ class News_model extends CI_Model {
         $userid = $param["uid"];
 
         //更大 <- 大 - 小 ->更小
-
-        $sqlbase = 'select id, title, brief,times,userid from articles where  IF(  `userid` ="'.$userid.'", 1 , tagid != 6) and isdel=0 ';
+        
+        $secret_id = $this->get_secret_tag();
+        
+        $sqlbase = 'select id, title, brief,times,userid from articles where  IF(  `userid` ="'.$userid.'", 1 , tagid != '.$secret_id.') and isdel=0';
 
         if (1 == $nextpag)
         {
@@ -67,7 +69,7 @@ class News_model extends CI_Model {
     {
         $sql = "select 1 from articles where id= $aid and userid = \"$uid\" ";   
         
-        echo $sql;
+        //echo $sql;
         $query = $this->db->query($sql);
 
         $res = $query->result_array();
@@ -77,9 +79,11 @@ class News_model extends CI_Model {
 
     public function check_secret_article($uid, $aid)
     {
-        $sql = "select 1 from articles where isdel=0 and (tagid != 6 and id = $aid or(id= $aid and userid = \"$uid\")) ";
+        $secret_id = $this->get_secret_tag();
 
-        echo $sql;
+        $sql = "select 1 from articles where isdel=0 and (tagid != $secret_id and id = $aid or(id= $aid and userid = \"$uid\")) ";
+
+        //echo $sql;
         $query = $this->db->query($sql);
 
         $res = $query->result_array();
@@ -91,26 +95,32 @@ class News_model extends CI_Model {
     {
         $sql = "update articles set isdel=1 where id= $aid and userid = \"$uid\" ";
 
-        echo $sql;
+        //echo $sql;
         $query = $this->db->query($sql);
 
         return $res;
     }
 
-    public function get_brief_num($tagid = 0)
+    public function get_brief_num($tagid, $uid)
     {
-        if ($tagid === 0)
-        {
-            $this->db->select("count(id) as couid");
-            $this->db->from('articles');
-            $query = $this->db->get();
+        $secret_id = $this->get_secret_tag();
 
+        //排除隐私和已删除部分
+        if ($tagid == 0)
+        {
+            $sql = 'select count(id) as couid from articles where  IF(  `userid` ="'.$uid.'", 1 , tagid != '.$secret_id.') and isdel=0 ';
+            
+            $query = $this->db->query($sql);
+
+            //echo $this->db->last_query();
             return $query->row_array();
         }
         else
         {
-            $this->db->select("count(id) as couid");
-            $query = $this->db->get_where('articles', array('tagid' => $tagid));
+            $sql = 'select count(id) as couid from articles where  IF(  `userid` ="'.$uid.'", 1 , tagid != '.$secret_id.') and isdel=0 and tagid='.$tagid.";";            
+    
+            $query = $this->db->query($sql);
+            //echo $this->db->last_query();
             return $query->row_array();
         }
     }
@@ -223,6 +233,24 @@ class News_model extends CI_Model {
     {
         $query = $this->db->get('tags');
         return $query->result_array();
+    }
+
+    public function get_secret_tag()
+    {
+        $query = $this->db->get_where('tags', array('tagname' => "隐私"));
+    
+        //echo $this->db->last_query();
+
+        $secret_id = 0;        
+
+        $tags =  $query->result_array();  
+
+        if (count($tags))
+        {
+            $secret_id = $tags[0]["id"];
+        } 
+
+        return $secret_id;
     }
     
     public function get_users($data)
