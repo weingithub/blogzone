@@ -2,11 +2,11 @@
             <?php foreach ($news as $news_item): ?>
                 <div class="article">
                 <p><a href="<?php echo site_url('blog/article/'.$news_item['id']); ?>"><?php echo $news_item['title']; ?></a></p>
-                <div class="article_info">    
-                    <span class="link_postdate"><?php echo $news_item['times']; ?></span>
-                    <span class="link_postdate">post by <?php echo $news_item['userid']; ?></span>
-                </div>
                 <?php echo strip_tags($news_item['brief']),"..."; ?>
+                <div class="article_info">    
+                    <span><?php echo $news_item['times']; ?></span>
+                    <span class="author">post by <?php echo $news_item['userid']; ?></span>
+                </div>
                 </div>
              <?php endforeach; ?>
                     <input type="hidden" id="hide_maxid" name='maxid' value="<?php echo $maxid ?>"> 
@@ -16,7 +16,7 @@
                     <input type="hidden" id="hide_minid" name='minid' value="<?php echo $minid ?>"> 
                     <?php
                         echo '<div id="pagenavi" class="navigation">
-                        <span class="pages">第 '.$curpage.'页， 共'.$allpage.'页</span>
+                        <span class="pages">第 '.$curpage.'页,共'.$allpage.'页</span>
                          ';
                     ?>
 
