@@ -74,11 +74,18 @@ class Blog extends CI_Controller {
 	
         $perpage = 3;
 
+        if (!isset($_SESSION['username'])) 
+        {
+            $param["uid"] = "";
+        }
+        else 
+        {
+            $param["uid"] = $_SESSION['username'];
+        }
+
         if (empty($_POST["sum"]))
         {
-            //echo "<br>empty hide_sum<br>";
-
-            $rowres = $this->news_model->get_brief_num($tagid);
+            $rowres = $this->news_model->get_brief_num($tagid, $param["uid"]);
 
             foreach ($rowres as $row)
                 $allsum= $rowres["couid"];
@@ -90,9 +97,9 @@ class Blog extends CI_Controller {
             $data["allpage"] = $_POST["sum"];    
         }
 
+
         if (empty($_POST["maxid"]))
         {
-            //echo "<br>empty hide_maxid<br>";
             $maxid = 0;
         }
         else
@@ -102,7 +109,6 @@ class Blog extends CI_Controller {
 
         if (empty($_POST["minid"]))
         {
-            //echo "<br>empty hide_maxid<br>";
             $minid = 0;
         }
         else
@@ -112,7 +118,6 @@ class Blog extends CI_Controller {
 
         if (empty($_POST["lastpage"]))
         {
-            //echo "<br>empty hide_lastpage<br>";
             $lastpage = 1;
         }
         else 
@@ -120,10 +125,7 @@ class Blog extends CI_Controller {
            $lastpage = $_POST["lastpage"];
         }
 
-        //echo "----",$nextpag."<br>";
-        //echo $lastpage."<br>";
-        //echo $maxid."<br>"    ;    
-
+        //set the param
         $param["tagid"] = $tagid;
         $param["maxid"] = $maxid;
         $param["minid"] = $minid;
@@ -131,18 +133,7 @@ class Blog extends CI_Controller {
         $param["nextpag"] = $nextpag;
         $param["per"] = $perpage;
         
-        //session_start();
-
-        if (!isset($_SESSION['username'])) 
-        {
-            $param["uid"] = "";
-        }
-        else 
-        {
-            $param["uid"] = $_SESSION['username'];
-        }
-
-            
+        //set the value    
         $data['curtag'] = $tagid;
         $data['news'] = $this->news_model->get_brief($param);
         
