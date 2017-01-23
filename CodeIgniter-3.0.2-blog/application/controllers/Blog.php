@@ -72,7 +72,7 @@ class Blog extends CI_Controller {
     {
         $this->load->model('news_model');
 	
-        $perpage = 3;
+        $perpage = 10;
 
         if (!isset($_SESSION['username'])) 
         {
