@@ -31,7 +31,7 @@ create table if not exists blog.users
 	passwd varchar(35) not null
 )default charset=utf8;
 
-insert into blog.tags(tagname) values("c/c++"), ("python"),("protobuf"),("随笔"),("转载");
+insert into blog.tags(tagname) values("c/c++"), ("python"),("protobuf"),("随笔"),("转载"),("私密");
 
 /*创建数据库*/
 create database tool;
