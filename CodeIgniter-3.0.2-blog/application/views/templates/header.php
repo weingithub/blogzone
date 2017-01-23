@@ -1,15 +1,14 @@
-
-
 <html>
     <head>
-        <title>CodeIgniter Tutorial</title>
-        <base href="<?php  echo base_url();?>"/> 
-        <meta charset="UTF8">
-        <link rel="stylesheet" type="text/css" href="resource/basic.css" >
+        <title>Welcome to my blog</title>
+        <meta http-equiv="Content-Type" content="text/hmtl; charset=utf-8" />
+	<base href="<?php  echo base_url();?>"/>
+        <link rel="stylesheet" type="text/css" href="resource/basic.css">
+        <link href="kindeditor/themes/default/default.css" rel="stylesheet" />
+         <link rel="stylesheet" href="kindeditor/plugins/code/prettify.css" />
     </head>
     <body>
 
-    <h1><?php echo $title; ?></h1>
     <div class="banner" >
         <div class="banner-2">
             <h1>coolcity--- just for fun</h1>
@@ -18,9 +17,31 @@
         <div id="nav-wrap1">
             <div id="nav-wrap2">
                 <ul id="nav">
-                    <li id="nav-homelink" class="current_page_item"><a class="fadeThis" href="http://yrczone.com/test.php" title="You are Home"><span>主页</span></a></li>
-                    <li class="page_item page-item-8"><a class="fadeThis" href="#"><span>关于</span></a></li>
-                    <li class="page_item page-item-8"><a class="fadeThis" href="write.php"><span>写文</span></a></li>
+                    <li id="nav-homelink" class="current_page_item"><a class="fadeThis" href="blog" title="You are Home"><span>主页</span></a></li>
+                    <li><a class="fadeThis" href="#"><span>关于</span></a></li>
+                    <li><a class="fadeThis" href="blog/write"><span>写文</span></a></li>
+                    <li><span class="welcome" >欢迎:</span>
+                        <?php 
+                         session_start();
+                        if (!isset($_SESSION['username']))
+                        {
+                            echo '<a style="color:#261c13;font-weight: bold;" onmouseover="this.style.cssText=\'color:#FFFFFF;\'" onmouseout="this.style.cssText=\'color:#261c13;\'" href="blog/login"><span>登录</span></a>';
+                        }
+                        else
+                        {
+                            $name = $_SESSION['username'];
+                            echo '<span style="color:#ffffff;font-weight: bold;">'.$name.'</span>';
+                        }
+
+                        ?>
+                    </li>
+                    
+                    <?php
+                        if (isset($_SESSION['username']))
+                        {
+                            echo '<li><a class="fadeThis" href="backend/logout"> <span>注销</span></a></li>';
+                        }
+                    ?>
                 </ul>
           </div>
         </div>
