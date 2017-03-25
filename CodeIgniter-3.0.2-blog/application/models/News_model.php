@@ -253,6 +253,30 @@ class News_model extends CI_Model {
         return $secret_id;
     }
     
+        public function add_tags($tag)
+    {
+        $dataval = array('tagname' => $tag);
+        $str = $this->db->insert_string('tags', $dataval);
+
+        $this->db->query($str);   
+
+        return $this->db->insert_id();
+    }
+
+    public function del_tags($tag)
+    {   
+        $this->db->delete('tags' , array('tagname' => $tag) );
+    } 
+
+    
+        public function check_tag($tag)
+    {
+        $query = $this->db->get_where('tags', array('tagname' => $tag));
+        $articleinfo = $query->row_array();
+
+        return empty($articleinfo);
+    }
+    
     public function get_users($data)
     {
         $uid = $data["uid"];
@@ -296,6 +320,18 @@ class News_model extends CI_Model {
         //select table
 
         $this->db->query($sql);
+    }
+    public function check_admin($data)
+    {
+        $uid = $data["uid"];
+        $pass = $data["pass"];
+
+        $md5pass = md5($pass);
+        $sql = 'select * from admins where userid="'.$uid.'" and passwd="'.$md5pass.'";';
+        
+        $res = $this->db->query($sql)->result_array();
+
+        return empty($res);
     }
 }
 ?>
