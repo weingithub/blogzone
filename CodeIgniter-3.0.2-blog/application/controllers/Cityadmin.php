@@ -11,6 +11,12 @@ class Cityadmin extends CI_Controller {
     public function afterlogin()
     {
         //判断是否登录
+        
+        if (!array_key_exists("username", $_POST) || !array_key_exists("userpwd", $_POST) )
+        {
+            redirect("login.html");
+        }
+
         $isempty = $this->checklogin($_POST['username'], $_POST['userpwd']);
 
         if ($isempty)
