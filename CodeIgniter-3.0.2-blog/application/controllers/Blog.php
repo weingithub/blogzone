@@ -86,9 +86,7 @@ class Blog extends CI_Controller {
         if (empty($_POST["sum"]))
         {
             $rowres = $this->news_model->get_brief_num($tagid, $param["uid"]);
-
-            foreach ($rowres as $row)
-                $allsum= $rowres["couid"];
+            $allsum= $rowres["couid"];
 
             $data["allpage"] = ceil($allsum/$perpage);          
         }
