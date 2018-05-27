@@ -54,7 +54,11 @@ class Backend extends CI_Controller {
             session_start();
             $_SESSION['username'] = $data["uid"]; 
             echo $_SESSION['username'];
-            redirect("blog");
+            $url = $_POST["jumpurl"];
+            if (empty($url))
+                $url="blog";
+            redirect($url);
+            //redirect("blog");
         }          
     }
     

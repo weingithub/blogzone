@@ -20,7 +20,7 @@ class News_model extends CI_Model {
         
         $secret_id = $this->get_secret_tag();
         
-        $sqlbase = 'select id, title, brief,times,userid from articles where  IF(  `userid` ="'.$userid.'", 1 , tagid != '.$secret_id.') and isdel=0';
+        $sqlbase = 'select A.id, title,tagid, tagname, brief,times,userid from articles as A, tags as B where A.tagid = B.id and IF(  `userid` ="'.$userid.'", 1 , tagid != '.$secret_id.') and isdel=0';
 
         if (1 == $nextpag)
         {
@@ -30,13 +30,13 @@ class News_model extends CI_Model {
         else if ($nextpag >= $lastpag) //往后翻
         {
             $limitnum = ($nextpag - $lastpag -1)*$perpag;
-            $sql = $sqlbase.' and id < '.$param["minid"];
+            $sql = $sqlbase.' and A.id < '.$param["minid"];
         }
         else
         {
             $limitnum = ($lastpag - $nextpag - 1)*$perpag;
             //$sql = 'select id, title, brief,times,userid from articles where id >'.$param["maxid"];
-            $sql = $sqlbase.' and id >'.$param["maxid"];
+            $sql = $sqlbase.' and A.id >'.$param["maxid"];
         }
 
         
@@ -51,6 +51,57 @@ class News_model extends CI_Model {
         
         if (1 == $nextpag || $nextpag >= $lastpag)  //向后翻或第一页
         {
+            $sql = $sql.' order by A.id desc limit '.$limitnum.','.$perpag;
+        }
+        else  //向前翻
+        {
+            $sql = $sql.' order by A.id asc limit '.$limitnum.','.$perpag;
+        }
+
+        //echo $sql;
+       
+        $query = $this->db->query($sql);
+
+        return $query->result_array();
+    }
+    
+    public function condition_paging($param)
+    {
+        //$lastid = $param["maxid"];
+        $lastpag = $param["lastpage"];
+        $nextpag = $param["nextpag"];
+        $tagid = $param["tagid"];
+        $perpag = $param["per"];
+        $userid = $param["uid"];
+        $minid = $param["minid"];
+        $maxid = $param["maxid"];
+        
+        //更大 <- 大 - 小 ->更小
+        $secret_id = $this->get_secret_tag();
+        $sqlbase = 'select A.id, title, tagid, tagname, brief,times,userid from articles  as A, tags as B where   A.tagid = B.id and IF(  `userid` ="'.$userid.'", 1 , tagid != '.$secret_id.') and isdel=0 ';
+
+        if (1 == $nextpag)
+        {
+            $limitnum = 0;
+            $sql = $sqlbase;                
+        }
+        else if ($nextpag >= $lastpag) //往后翻
+        {
+            $limitnum = ($nextpag - $lastpag -1)*$perpag;
+            $sql = $sqlbase.' and A.id < '.$param["minid"];
+        }
+        else
+        {
+            $limitnum = ($lastpag - $nextpag - 1)*$perpag;
+            //$sql = 'select id, title, brief,times,userid from articles where id >'.$param["maxid"];
+            $sql = $sqlbase.' and A.id >'.$param["maxid"];
+        }
+        
+        $this->assemble_tag_condition($param, $sql);
+        $this->assemble_fuzzyquery_condition($param, $sql);
+
+        if (1 == $nextpag || $nextpag >= $lastpag)  //向后翻或第一页
+        {
             $sql = $sql.' order by id desc limit '.$limitnum.','.$perpag;
         }
         else  //向前翻
@@ -63,6 +114,26 @@ class News_model extends CI_Model {
         $query = $this->db->query($sql);
 
         return $query->result_array();
+    }
+    
+    private function assemble_tag_condition($param, &$sql)
+    {
+        //组装tagid的条件
+        if (array_key_exists("tagid", $param) && $param["tagid"] != 0)
+        {
+            $tagid = $param["tagid"];
+            $sql = $sql.' and tagid='.$tagid.' ';
+        }
+    }
+    
+    private function assemble_fuzzyquery_condition($param, &$sql)
+    {
+        //判断是否包含该key
+        if (array_key_exists("keyword", $param) && $param["keyword"] != "")
+        {
+            $keyword =  $param["keyword"];
+            $sql = $sql.' and (strip_tags(title) like "%'.$keyword.'%" or cid in ( select id from content where strip_tags(content) like "%'.$keyword.'%"))';
+        }
     }
         
     public function check_user_article($uid, $aid)
@@ -101,23 +172,27 @@ class News_model extends CI_Model {
         return $res;
     }
 
-    public function get_brief_num($tagid, $uid)
+    public function get_brief_num($tagid, $uid, $keyword = "")
     {
         $secret_id = $this->get_secret_tag();
-
+        $param["keyword"] = $keyword;
+	
         //排除隐私和已删除部分
         if ($tagid == 0)
         {
             $sql = 'select count(id) as couid from articles where  IF(  `userid` ="'.$uid.'", 1 , tagid != '.$secret_id.') and isdel=0 ';
             
+	    $this->assemble_fuzzyquery_condition($param, $sql);
             $query = $this->db->query($sql);
 
             //echo $this->db->last_query();
+
             return $query->row_array();
         }
         else
         {
             $sql = 'select count(id) as couid from articles where  IF(  `userid` ="'.$uid.'", 1 , tagid != '.$secret_id.') and isdel=0 and tagid='.$tagid.";";            
+	    $this->assemble_fuzzyquery_condition($param, $sql);
     
             $query = $this->db->query($sql);
             //echo $this->db->last_query();
@@ -229,9 +304,15 @@ class News_model extends CI_Model {
         return $result;
     }
 
-    public function get_tags()
+    public function get_tags($param)
     {
-        $query = $this->db->get('tags');
+        //获取每个tag的文章数
+        $userid = $param["uid"];
+	
+	$secret_id = $this->get_secret_tag();	
+	$sql = 'select A.*, count(B.id) as num from tags as A left join articles as B on A.id = B.tagid where IF(`userid` ="'.$userid.'", 1 , ( isnull(tagid) or tagid != '.$secret_id.')) and (isnull(isdel) or isdel=0) group by A.id'; 
+        
+         $query = $this->db->query($sql);
         return $query->result_array();
     }
 

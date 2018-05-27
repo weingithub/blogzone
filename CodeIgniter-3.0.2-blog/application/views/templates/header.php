@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>Welcome to my blog</title>
+        <title>coolcity's fun blog</title>
         <meta http-equiv="Content-Type" content="text/hmtl; charset=utf-8" />
 	<base href="<?php  echo base_url();?>"/>
         <link rel="stylesheet" type="text/css" href="resource/basic.css">
@@ -22,7 +22,7 @@
                     <li><a class="fadeThis" href="blog/write"><span>写文</span></a></li>
                     <li><span class="welcome" >欢迎:</span>
                         <?php 
-                         session_start();
+                         //session_start();
                         if (!isset($_SESSION['username']))
                         {
                             echo '<a style="color:#261c13;font-weight: bold;" onmouseover="this.style.cssText=\'color:#FFFFFF;\'" onmouseout="this.style.cssText=\'color:#261c13;\'" href="blog/login"><span>登录</span></a>';

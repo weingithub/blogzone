@@ -14,7 +14,9 @@
     
     if (!isset($_SESSION['username']))
     {
-        header("Location: login"); 
+        $thisurl = "https://".$_SERVER["HTTP_HOST"].$_SERVER['REQUEST_URI'];//当前URL 
+        $thisurl = urlencode($thisurl);//这里要注意需要把获取到的url转码，不然后面不好传递URL 
+        header("Location: /blog/login?url=$thisurl"); 
         exit(0);
     }
     
@@ -43,12 +45,12 @@
     <link href="kindeditor/themes/default/default.css" rel="stylesheet" />
     <link rel="stylesheet" href="kindeditor/plugins/code/prettify.css" />
     <script src="kindeditor/kindeditor-all.js"></script>
-    <script charset="utf-8" src="kindeditor/plugins/code/prettify.js"></script>
     
+    <script charset="utf-8" src="kindeditor/plugins/code/shCore.js"></script>
     <script>
 		KindEditor.ready(function(K) {
 			var editor1 = K.create('textarea[name="content"]', {
-                cssPath : 'http://www.yrczone.com/kindeditor/plugins/code/prettify.css',
+                cssPath : 'https://yrczone.com/kindeditor/plugins/code/prettify.css',
 				afterCreate : function() {
 					var self = this;
                     

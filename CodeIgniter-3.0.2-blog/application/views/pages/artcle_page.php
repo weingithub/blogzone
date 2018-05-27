@@ -1,11 +1,14 @@
             <div class="main-content">
             <?php foreach ($news as $news_item): ?>
                 <div class="article">
+                <div>
                 <p><a href="<?php echo site_url('blog/article/'.$news_item['id']); ?>"><?php echo $news_item['title']; ?></a></p>
                 <?php echo strip_tags($news_item['brief']),"..."; ?>
+                </div>
                 <div class="article_info">    
-                    <span><?php echo $news_item['times']; ?></span>
-                    <span class="author">post by <?php echo $news_item['userid']; ?></span>
+                    发布时间：<span><?php echo $news_item['times']; ?></span>&nbsp;| 
+                    作者：<span class="author"><?php echo $news_item['userid']; ?></span>&nbsp;| 
+                    分类：<a href="<?php echo site_url('blog/tag/'.$news_item['tagid']);?>"><?php echo $news_item['tagname']; ?></a>&nbsp;
                 </div>
                 </div>
              <?php endforeach; ?>
@@ -14,7 +17,14 @@
                     <input type="hidden" id="hide_sum" name='sum' value="<?php echo $allpage ?>"> 
                     <input type="hidden" id="hide_lastpage" name='lastpage' value="<?php echo $curpage ?>"> 
                     <input type="hidden" id="hide_minid" name='minid' value="<?php echo $minid ?>"> 
+
                     <?php
+                        //判断是否有keyword字段
+                        if(isset($keyword))
+                            echo '<input type="hidden" id="hide_keyword" name="keyword" value="'.$keyword.'">';
+                    ?>   
+		            
+		    <?php
                         echo '<div id="pagenavi" class="navigation">
                         <span class="pages">第 '.$curpage.'页,共'.$allpage.'页</span>
                          ';

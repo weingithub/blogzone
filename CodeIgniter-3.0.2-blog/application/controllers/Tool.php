@@ -8,6 +8,73 @@ class Tool extends CI_Controller {
         $this->load->model('vocabulary');
     }
    
+   //新一轮的功能
+    public function deencrypt()
+    {
+        //用于加密与解密
+       $this->load->view('tools/en_decrypt');   
+    }
+
+    public function encrypt()
+    {
+        $rowdata = $_POST["str"];
+        
+        $proc = $this->escape($rowdata);
+        $cmd = "cd /home/yrc/pracice/ && ./encrypt -m 1 -c ".$proc." 2>&1";
+        exec($cmd, $test);
+        
+       // $test = array(2,3);
+        foreach ($test as $tt)
+            echo "$tt\n";
+
+        //echo json_encode($data);
+    }
+
+    private function escape($str)
+    {
+        //如何支持换行的数据？
+        $proc = str_replace("\n", " ", $str);
+        //echo $proc;   
+        //处理好换行之后，对字符串进行转义
+        
+        /*
+        if (strrpos($proc, "$"))
+               echo "have\n";
+        */
+
+        $proc = addslashes($proc);
+        $proc = str_replace("$", "\\$", $proc);
+        
+        return $proc;
+        /*
+        $demo = "just test\what";
+        $demo1 = addslashes($demo);
+        echo $demo1."\n";
+
+        $demo2 = addslashes($demo1);
+        echo $demo2."\n";
+        */
+    }
+
+    public function decrypt()
+    {
+        $rowdata = $_POST["str"];
+
+        //$proc = escapeshellcmd($rowdata);
+        //echo $rowdata;
+        
+        //将\n替换成空格
+        $proc = str_replace("\n", " ", $rowdata);
+        //echo $proc;
+        $cmd = "cd /home/yrc/pracice/ && ./encrypt -m 2 -c ".$proc." 2>&1";
+        //echo $cmd;
+        exec($cmd, $test);
+        
+        //对结果进行转义
+        //$proc = addslashes($test);
+        foreach ($test as $tt)
+            echo "$tt\n";
+    }
     public function vocabulary()
     {
         //显示单词
@@ -229,7 +296,7 @@ class Tool extends CI_Controller {
         //echo "param:<br>$tag,$attr,$value<br>";
 
         $regex = "/<$tag.*?$attr=\".*?$value.*?\".*?>(.*?)<\/$tag>/is";
-        echo $regex."<br>";
+        //echo $regex."<br>";
         preg_match_all($regex,$html,$matches,PREG_PATTERN_ORDER);
         return $matches[1];
     }

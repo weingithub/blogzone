@@ -169,6 +169,7 @@ function pages(url,nextpage)
     var sum=$('#hide_sum')[0];
     var lastpage=$('#hide_lastpage')[0];
     var minid = $('#hide_minid')[0];
+    var keyword = $('#hide_keyword')[0];
     
     var ch = url.charAt(url.length -1);
     
@@ -178,11 +179,13 @@ function pages(url,nextpage)
     var fistpos = url.indexOf('/');
  
     //考虑以下这几种情况/blog ;/blog/; /blog/2 ;/blog/tag/1; /blog/tag/1/1
-    //1与4相同处理
+    //新情况 /blog/xx (6) 与/blog/xx/2 (7)
+    //xx与tag无关，且后面只带页数
+   //1与4相同处理
     //2
     //3与5同
-    
-    var splitlen = url.split('/').length;
+    var splitres = url.split('/');
+    var splitlen = splitres.length;
     var nextpos =  url.indexOf('/', fistpos);
 
     if (nextpos != -1 && (nextpos - fistpos +2 == url.length)) //2
@@ -195,6 +198,18 @@ function pages(url,nextpage)
     }
     if (3 == splitlen || 5 == splitlen) //3或5
     {
+        //判断是否以数字结尾，如果不是，则不做切割处理
+        if (ch >= '0' && ch <= '9')
+            targeturl = url.substring(0, url.length -1) + nextpage;
+        else
+        {
+            targeturl = url + "/" + nextpage;
+        }
+    }   
+    else if (4 == splitlen && splitres[2] != 'tag')
+    {
+        //第3值非tag
+        //取 xx/2中的 xx/
         targeturl = url.substring(0, url.length -1) + nextpage;
     }
     else
@@ -213,7 +228,7 @@ function pages(url,nextpage)
     temp.appendChild(sum);
     temp.appendChild(lastpage);    
     temp.appendChild(minid);
-    
+    temp.appendChild(keyword);
     
     //var opt = document.createElement("input");    
     //opt.type = "submit";  

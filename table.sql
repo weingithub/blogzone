@@ -55,3 +55,29 @@ create table if not exists tool.harrypotter
 	meaning varchar(256)
 )default charset=utf8;
 
+/*创建strip html标记的函数*/
+delimiter ||
+DROP FUNCTION IF EXISTS strip_tags||
+CREATE FUNCTION strip_tags( x longtext) RETURNS longtext
+LANGUAGE SQL NOT DETERMINISTIC READS SQL DATA
+BEGIN
+DECLARE sstart INT UNSIGNED;
+DECLARE ends INT UNSIGNED;
+SET sstart = LOCATE('<', x, 1);
+REPEAT
+SET ends = LOCATE('>', x, sstart);
+SET x = CONCAT(SUBSTRING( x, 1 ,sstart -1) ,SUBSTRING(x, ends +1 )) ;
+SET sstart = LOCATE('<', x, 1);
+UNTIL sstart < 1 END REPEAT;
+set x=replace(x, "&nbsp;", "");
+set x=replace(x, "&amp;", "");
+set x=replace(x, "&lt;", "");
+set x=replace(x, "&gt;", "");
+set x=replace(x, "&quot;", "");
+set x=replace(x, "&qpos;", "");
+return x;
+END;
+||
+delimiter ;
+
+

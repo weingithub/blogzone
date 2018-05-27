@@ -19,11 +19,10 @@
                     </div>                
 
                     <HR width="100%" SIZE=1/>               
-                    <?php echo $content; ?>   
+                    <div class="content">
+                        <?php echo $content; ?>
+                    </div>
                 </div>
             </div>
 <br style="clear:both;" />  
 <br style="clear:both;" />
-
-<script src="kindeditor/kindeditor-all.js"></script>
-<script charset="utf-8" src="kindeditor/plugins/code/prettify.js"></script>

@@ -193,6 +193,11 @@ body{
     font-weight:bold;
 }
 
+.left-tag form{
+    padding-left:10px;
+    padding-bottom:10px;
+}
+
 .article {
 	width: 80%;
     margin-top:10px;
