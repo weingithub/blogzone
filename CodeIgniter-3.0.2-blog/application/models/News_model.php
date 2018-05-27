@@ -245,7 +245,7 @@ class News_model extends CI_Model {
         $where = "id=".$articleinfo['cid'];       
         $update_cont_str = $this->db->update_string('content', $updatedata, $where);
     
-        $updatedata = array('title' => $title, 'tagid' => $tag, 'brief' => $brief);
+        $updatedata = array('title' => $title, 'tagid' => $tag, 'brief' => $brief, 'times' => null);
         $where = "id =".$aid;
         $update_arti_str = $this->db->update_string('articles', $updatedata, $where);
 
