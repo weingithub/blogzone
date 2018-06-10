@@ -39,6 +39,16 @@ create table if not exists blog.admins
 
 insert into blog.tags(tagname) values("c/c++"), ("python"),("protobuf"),("随笔"),("转载"),("私密");
 
+/*评论表*/
+create table if not exists blog.comments
+(
+    id bigint auto_increment primary key,
+    article_id int(11) not null,  /*评论的文章id*/
+    name varchar(64) not null,  /*评论者名称*/
+    comm_content longblob not null,  /*评论的内容*/
+    comm_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP /*评论的时间*/
+)ENGINE=innodb default charset=utf8;
+
 /*创建数据库*/
 create database tool;
 

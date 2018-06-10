@@ -8,9 +8,10 @@
      <div id="english-header" class="head_info">   
     <form action="tool/save" method="post">
            <p> 单词: <input type="text" size=20 name="word"> </p>
+           <p> 系列: <input type="text" size=20 name="series" value="1"> </p>
            <p> 页数: <input type="text" size=20 name="page"> </p>
            <p> 序号: <input type="text" size=20 name="seq"> </p>
-           <p> 中文:<input type="text" size=20 name="mean"> </p>
+           <p> 中文:<input type="text" size=20 name="mean" style="width:300px"> </p>
           
             
     <input type="submit" value="收录">
@@ -43,6 +44,7 @@
               
             </div>
                 <?php echo $news_item["meaning"] ?>
+           <p> 系列: <?php echo $news_item["series"] ?> </p>
            <p> 页数: <?php echo $news_item["page"] ?> </p>
            <p> 序号: <?php echo $news_item["seq"] ?> </p>
            </div>

@@ -169,8 +169,7 @@ function pages(url,nextpage)
     var sum=$('#hide_sum')[0];
     var lastpage=$('#hide_lastpage')[0];
     var minid = $('#hide_minid')[0];
-    var keyword = $('#hide_keyword')[0];
-    
+    var keyword = $('#hide_keyword')[0];  
     var ch = url.charAt(url.length -1);
     
     var targeturl;
@@ -181,7 +180,7 @@ function pages(url,nextpage)
     //考虑以下这几种情况/blog ;/blog/; /blog/2 ;/blog/tag/1; /blog/tag/1/1
     //新情况 /blog/xx (6) 与/blog/xx/2 (7)
     //xx与tag无关，且后面只带页数
-   //1与4相同处理
+    //1与4相同处理
     //2
     //3与5同
     var splitres = url.split('/');
@@ -190,7 +189,7 @@ function pages(url,nextpage)
 
     if (nextpos != -1 && (nextpos - fistpos +2 == url.length)) //2
     {
-        targeturl = url + nextpage;
+        targeturl = url + "/"+ nextpage;
     }   
     else if (nextpos == -1) //1
     {
@@ -201,13 +200,13 @@ function pages(url,nextpage)
         //判断是否以数字结尾，如果不是，则不做切割处理
         if (ch >= '0' && ch <= '9')
             targeturl = url.substring(0, url.length -1) + nextpage;
-        else
-        {
+        else 
+        {   
             targeturl = url + "/" + nextpage;
-        }
-    }   
+        } 
+    }
     else if (4 == splitlen && splitres[2] != 'tag')
-    {
+    {   
         //第3值非tag
         //取 xx/2中的 xx/
         targeturl = url.substring(0, url.length -1) + nextpage;
@@ -230,11 +229,7 @@ function pages(url,nextpage)
     temp.appendChild(minid);
     temp.appendChild(keyword);
     
-    //var opt = document.createElement("input");    
-    //opt.type = "submit";  
-    //opt.name = "postsubmit";  
 
-    //temp.appendChild(opt);  
 
     document.body.appendChild(temp);
     temp.submit();
@@ -264,3 +259,38 @@ function prononce_method(aobj)
    //window.location
 }
 
+function RemoveBlockquote(strText)
+{
+    var regEx = /<blockquote>(.|\n|\r)*<\/blockquote>/ig;
+    regEx.multiline=true;
+    return strText.replace(regEx, "");
+}
+
+function RemoveHTML(strText)
+{
+    var regEx = /<[^>]*>/g;
+     return strText.replace(regEx, "");
+}
+
+
+function ignoreSpaces(string) 
+{
+    var temp = "";
+    string = '' + string;
+    splitstring = string.split("  "); //双引号之间是个空格；
+    for(i = 0; i < splitstring.length; i++)
+        temp += splitstring[i];
+    return temp;
+}
+
+function CommentQuote(v,f) 
+{
+    window.location.href=window.location.href+"#comment-text";
+
+    string=document.forms["comments_form"].text.value;
+    string2=ignoreSpaces(RemoveHTML(RemoveBlockquote(document.getElementById(v).innerHTML)));
+    document.forms["comments_form"].text.value="<blockquote>\n<pre>引用"+f+"的发言：</pre>\n"+string2+"\n</blockquote>\n\n"+string;
+
+
+    return true;
+}

@@ -1,3 +1,8 @@
+<html>
+
+<head>
+    <title>登录</title>
+</head>
  <link rel="stylesheet" type="text/css" href="resource/login.css">
 
 <div class="login">
@@ -10,8 +15,10 @@
         <p>密码:</p>
         <input type="password" style="width:200px" id="userpass" name="userpwd" onBlur="check_pwd_login()">
         <p id="ppwd" class="info_red">*</p>
+	<input type="hidden" name="jumpurl" value =<?php if (array_key_exists("url", $_GET)) echo $_GET["url"] ?>>
         <input type="submit" value="登录">
     </form>
 </div>
 
 <script src="resource/functional.js"></script>
+</html>

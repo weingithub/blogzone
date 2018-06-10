@@ -9,13 +9,14 @@ class Blog extends CI_Controller {
    
     public function index()
     {
-        redirect("blog");
+       redirect("blog");
     }
     
     public function home($page =1)
     {
+        //echo $page,'---tttt---<br>';
         $this->load->view('templates/header');
-	$this->articlepages_withcondition(0, $page);
+	    $this->articlepages_withcondition(0, $page);
         $this->load->view('templates/footer');
     }
     
@@ -25,6 +26,7 @@ class Blog extends CI_Controller {
         $this->articlepages_withcondition($tagid, $page);
         $this->load->view('templates/footer');
     }
+
     public function searchinside($page=1)
     {
         $this->load->view('templates/header');
@@ -55,6 +57,33 @@ class Blog extends CI_Controller {
         $this->realarticle($aid);
         $this->load->view('templates/footer');
     }
+    
+    public function make_comment()
+    {     
+        $this->load->model('news_model');
+        
+        //发表评论.从form中获取评论的作者，内容，以及针对的文章id
+        $name = $_POST['author'];
+        $content = $_POST['text'];
+        $aid = $_POST['article_id'];
+        
+        if (empty($name))
+        {
+            $name = "匿名用户";
+        }
+        
+        //写评论
+        $result = $this->news_model->insert_comment($content, $name, $aid);
+        
+        if ($result["issuccess"])
+        {
+            redirect("blog/article/".$aid);
+        }
+        else
+        {
+            $this->load->view("pages/jump");
+        }
+    }
 
     public function write($aid = 0)
     {
@@ -77,9 +106,10 @@ class Blog extends CI_Controller {
         }        
 
         $data['tags'] = $this->news_model->get_tags($param);
-        
+
         $this->load->view('templates/main-head');
         $this->LoadLeft();
+        
         $this->load->view('pages/write',$data);
         $this->load->view('templates/main-end');
         $this->load->view('templates/footer');
@@ -103,15 +133,14 @@ class Blog extends CI_Controller {
         if (empty($_POST["sum"]))
         {
             $rowres = $this->news_model->get_brief_num($tagid, $param["uid"]);
-            $allsum= $rowres["couid"];
 
+            $allsum= $rowres["couid"];
             $data["allpage"] = ceil($allsum/$perpage);          
         }
         else
         {
             $data["allpage"] = $_POST["sum"];    
         }
-
 
         if (empty($_POST["maxid"]))
         {
@@ -182,7 +211,6 @@ class Blog extends CI_Controller {
         $this->LoadLeft();
         $this->load->view('pages/artcle_page', $data);
         $this->load->view('templates/main-end');
-        
     }
     
     private function articlepages_withcondition($tagid = 0, $nextpag = 1)
@@ -332,10 +360,8 @@ class Blog extends CI_Controller {
             {
                 
                 $data= $this->news_model->get_article($aid);
-            
-                // echo count($data);
-                //var_dump($data);
-            
+                $data["article_comments"] = $this->news_model->get_article_comment($aid);
+         
                 $this->load->view('templates/main-head', $data);
                 $this->LoadLeft();
                 $this->load->view('pages/artcle', $data);
@@ -357,7 +383,7 @@ class Blog extends CI_Controller {
         } 
     
         $data['tags'] = $this->news_model->get_tags($param);
-        $data['keyword'] = $keyword;
+	$data['keyword'] = $keyword;
         $this->load->view('templates/left',$data);             
     }
 }

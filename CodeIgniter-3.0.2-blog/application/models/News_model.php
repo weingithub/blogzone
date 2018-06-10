@@ -124,6 +124,7 @@ class News_model extends CI_Model {
             $tagid = $param["tagid"];
             $sql = $sql.' and tagid='.$tagid.' ';
         }
+        
     }
     
     private function assemble_fuzzyquery_condition($param, &$sql)
@@ -175,14 +176,14 @@ class News_model extends CI_Model {
     public function get_brief_num($tagid, $uid, $keyword = "")
     {
         $secret_id = $this->get_secret_tag();
-        $param["keyword"] = $keyword;
-	
+
+	$param["keyword"] = $keyword;
         //排除隐私和已删除部分
-        if ($tagid == 0)
+        if ($tagid === 0)
         {
             $sql = 'select count(id) as couid from articles where  IF(  `userid` ="'.$uid.'", 1 , tagid != '.$secret_id.') and isdel=0 ';
             
-	    $this->assemble_fuzzyquery_condition($param, $sql);
+            $this->assemble_fuzzyquery_condition($param, $sql);
             $query = $this->db->query($sql);
 
             //echo $this->db->last_query();
@@ -192,7 +193,7 @@ class News_model extends CI_Model {
         else
         {
             $sql = 'select count(id) as couid from articles where  IF(  `userid` ="'.$uid.'", 1 , tagid != '.$secret_id.') and isdel=0 and tagid='.$tagid.";";            
-	    $this->assemble_fuzzyquery_condition($param, $sql);
+            $this->assemble_fuzzyquery_condition($param, $sql);
     
             $query = $this->db->query($sql);
             //echo $this->db->last_query();
@@ -210,6 +211,17 @@ class News_model extends CI_Model {
         $query = $this->db->get();
 
         return $query->row_array();       
+    }
+    
+    public function get_article_comment($article_id)
+    {
+        //根据aid，获取总的楼层数
+        $sql = 'select id,name,comm_content,comm_date from comments where article_id="'.$article_id.'" order by id';
+        $query = $this->db->query($sql);
+        
+        echo "<br>$sql<br>";
+        
+        return $query->result_array();
     }
     
     public function save_article($data)
@@ -245,6 +257,7 @@ class News_model extends CI_Model {
         $where = "id=".$articleinfo['cid'];       
         $update_cont_str = $this->db->update_string('content', $updatedata, $where);
     
+        //article内容没有改变时，时间戳的值不会发生变化
         $updatedata = array('title' => $title, 'tagid' => $tag, 'brief' => $brief, 'times' => null);
         $where = "id =".$aid;
         $update_arti_str = $this->db->update_string('articles', $updatedata, $where);
@@ -303,16 +316,44 @@ class News_model extends CI_Model {
 
         return $result;
     }
+    
+    public function insert_comment($content, $name, $aid)
+    {
+        $dataval = array('article_id' => $aid, 'name' => $name, 'comm_content' => $content);
+
+        $artstr = $this->db->insert_string('comments', $dataval);
+
+        $this->db->query($artstr);
+        $aid = $this->db->insert_id();
+
+        $this->db->trans_complete();
+
+        if ($this->db->trans_status() === FALSE)
+        {
+            $result["issuccess"] = false;
+        }
+        else
+        {
+            $result["issuccess"] = true;
+        }
+
+        return $result;
+    }
 
     public function get_tags($param)
     {
         //获取每个tag的文章数
         $userid = $param["uid"];
-	
-	$secret_id = $this->get_secret_tag();	
-	$sql = 'select A.*, count(B.id) as num from tags as A left join articles as B on A.id = B.tagid where IF(`userid` ="'.$userid.'", 1 , ( isnull(tagid) or tagid != '.$secret_id.')) and (isnull(isdel) or isdel=0) group by A.id'; 
+
+        //更大 <- 大 - 小 ->更小
         
-         $query = $this->db->query($sql);
+        $secret_id = $this->get_secret_tag();
+        
+        $sql = 'select A.*, count(B.id) as num from tags as A left join articles as B on A.id = B.tagid where IF(`userid` ="'.$userid.'", 1 , ( isnull(tagid) or tagid != '.$secret_id.')) and (isnull(isdel) or isdel=0) group by A.id'; 
+        
+        //echo $sql;
+        $query = $this->db->query($sql);
+
         return $query->result_array();
     }
 
