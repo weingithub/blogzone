@@ -6,7 +6,8 @@
                          <h1><?php echo $title; ?></h1>
                     </div>
                     <div class="article_info">
-                        <span><?php echo $times; ?></span>
+                        <span><?php echo $times; ?> |</span>
+                        <span class="comment">评论:<?php echo $commentnum; ?> |</span>
                         <span class="author">post by <?php echo $userid; ?></span>
                     <?php
                         if (isset($_SESSION['username']) && $_SESSION['username'] == $userid)

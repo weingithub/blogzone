@@ -345,10 +345,11 @@ class News_model extends CI_Model {
     {
         $sqlstring = "select count(id) as commentnum from comments where article_id=$aid";
         
-        $this->db->query($sqlstring);
+        $query = $this->db->query($sqlstring);
         
         $result = $query->result_array();
-        return $result['commentnum'];
+
+        return $result[0]['commentnum'];
     }
 
     public function get_tags($param)

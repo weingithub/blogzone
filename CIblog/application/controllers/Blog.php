@@ -246,7 +246,7 @@ class Blog extends CI_Controller {
         $maxid = 0;
         $minid = 0xFFFFFFFF;
 
-        foreach ($data["news"] as $item)
+        foreach ($data["news"] as &$item)
         {
             //echo $item["id"];
             if ($maxid < $item["id"])
@@ -259,7 +259,7 @@ class Blog extends CI_Controller {
                 $minid = $item["id"];
             }
 
-	    $data['commentnum'] = $this->news_model->get_comments_num($item["id"]);
+	        $item['commentnum'] = $this->news_model->get_comments_num($item["id"]);
         }
 
         $data["maxid"] = $maxid;
@@ -363,6 +363,7 @@ class Blog extends CI_Controller {
                 
                 $data= $this->news_model->get_article($aid);
                 $data["article_comments"] = $this->news_model->get_article_comment($aid);
+                $data['commentnum'] = $this->news_model->get_comments_num($aid);
          
                 $this->load->view('templates/main-head', $data);
                 $this->LoadLeft();
