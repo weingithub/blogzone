@@ -258,6 +258,8 @@ class Blog extends CI_Controller {
             {
                 $minid = $item["id"];
             }
+
+	    $data['commentnum'] = $this->news_model->get_comments_num($item["id"]);
         }
 
         $data["maxid"] = $maxid;

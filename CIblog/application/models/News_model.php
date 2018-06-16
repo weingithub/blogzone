@@ -340,6 +340,17 @@ class News_model extends CI_Model {
         return $result;
     }
 
+
+    public function get_comments_num($aid)
+    {
+        $sqlstring = "select count(id) as commentnum from comments where article_id=$aid";
+        
+        $this->db->query($sqlstring);
+        
+        $result = $query->result_array();
+        return $result['commentnum'];
+    }
+
     public function get_tags($param)
     {
         //获取每个tag的文章数

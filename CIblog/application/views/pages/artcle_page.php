@@ -7,6 +7,7 @@
                 </div>
                 <div class="article_info">    
                     发布时间：<span><?php echo $news_item['times']; ?></span>&nbsp;| 
+                    评论：<span><?php echo $news_item['commentnum']; ?></span>&nbsp;| 
                     作者：<span class="author"><?php echo $news_item['userid']; ?></span>&nbsp;| 
                     分类：<a href="<?php echo site_url('blog/tag/'.$news_item['tagid']);?>"><?php echo $news_item['tagname']; ?></a>&nbsp;
                 </div>
