@@ -89,5 +89,27 @@ return x;
 END;
 ||
 delimiter ;
-
-
+						      
+/*上面那个函数似乎无效，后面我又试了个新函数*/						      
+DELIMITER ||  
+CREATE FUNCTION `strip_tags`( Dirty longtext CHARSET utf8)  
+RETURNS longtext CHARSET utf8
+ 
+DETERMINISTIC   
+BEGIN  
+  DECLARE iStart, iEnd, iLength int;  
+    WHILE Locate( '<', Dirty ) > 0 And Locate( '>', Dirty, Locate( '<', Dirty )) > 0 DO  
+      BEGIN  
+        SET iStart = Locate( '<', Dirty ), iEnd = Locate( '>', Dirty, Locate('<', Dirty ));  
+        SET iLength = ( iEnd - iStart) + 1;  
+        IF iLength > 0 THEN  
+          BEGIN  
+            SET Dirty = Insert( Dirty, iStart, iLength, '');  
+          END;  
+        END IF;  
+      END;  
+    END WHILE;  
+    RETURN Dirty;  
+END;  
+||
+delimiter ;
